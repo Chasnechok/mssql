@@ -20,7 +20,6 @@ config:
   edition: "Developer" # Express, Standard, Enterprise, EnterpriseCore
   acceptEula: true
   agent_enabled: false
-  sa_password: "StrongPass1!"
 
   # specify any additional configuration
   mssqlConf: |
