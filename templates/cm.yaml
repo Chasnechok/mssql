@@ -1,0 +1,10 @@
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: mssql-config
+data:
+  mssql.conf: |
+    [filelocation]
+    defaultdatadir = /var/opt/mssql/data
+    defaultlogdir = /var/opt/mssql/log
+    {{- .Values.config.mssqlConf | nindent 4 -}}

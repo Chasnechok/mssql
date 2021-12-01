@@ -1,0 +1,9 @@
+apiVersion: v2
+name: mssql
+description: SQL Server Linux Helm Chart
+type: application
+version: 0.1.0
+home: https://hub.docker.com/r/microsoft/mssql-server-linux/
+icon: https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1I4Dx
+
+appVersion: '2019-latest'

@@ -1,0 +1,88 @@
+replicaCount: 1
+statefulSet: false
+
+image:
+  repository: mcr.microsoft.com/mssql/server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "2019-latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+containers:
+  port: 1433
+
+extraInitContainers: []
+
+config: 
+  edition: "Developer" # Express, Standard, Enterprise, EnterpriseCore
+  acceptEula: true
+  agent_enabled: false
+  sa_password: "StrongPass1!"
+
+  # specify any additional configuration
+  mssqlConf: |
+    [coredump]
+    captureminiandfull = true
+    coredumptype = full
+    
+    [hadr]
+    hadrenabled = 1
+    
+    [language]
+    lcid = 1033
+
+persistance:
+  annotations: {}
+  storageClass: 'do-block-storage'
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+
+extraEnvs: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 10001
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  annotations: {}
+  type: ClusterIP
+  port: 1433
+  loadBalancerIP: ''
+  nodePort: ''
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

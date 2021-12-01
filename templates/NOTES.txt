@@ -1,0 +1,5 @@
+MSSQL Server being deployed.
+Status: kubectl get po -l app.kubernetes.io/name=mssql -n {{ .Release.Namespace }} -w
+----
+User name: "sa"
+Password: kubectl get secret {{ include "uumssql.fullname" . }}-secret -n {{ .Release.Namespace }} -o jsonpath="{.data.password}" | base64 -d
