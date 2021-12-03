@@ -1,5 +1,38 @@
-MSSQL Server being deployed.
-Status: kubectl get po -l app.kubernetes.io/name=mssql -n {{ .Release.Namespace }} -w
-----
-User name: "sa"
-Password: kubectl get secret {{ include "uumssql.fullname" . }}-secret -n {{ .Release.Namespace }} -o jsonpath="{.data.password}" | base64 -d
+{{- $relname := include "uumssql.fullname" . -}}
+{{- $ns := .Release.Namespace -}}
+{{- $svcPort := .Values.service.port -}}
+
+** Please be patient while the chart is being deployed **
+
+Status: kubectl get po -l app.kubernetes.io/name=mssql -n {{ $ns }} -w
+
+Microsoft SQL Server can be accessed on the following DNS name(s) and ports from within your cluster:
+    {{ range $i := until (int .Values.replicaCount) }}
+    {{ $relname }}-{{ $i }}.{{ $relname }}-headless.{{ $ns }}:{{ $svcPort }}
+    {{- end }}  
+
+Your credentials:
+    userName: sa
+    password: kubectl get secret {{ $relname }}-secret -n {{ $ns }} -o jsonpath="{.data.password}" | base64 -d
+
+To connect to your database, create a MSSQL Tools client container:
+
+    kubectl run -n {{ $ns }} mssql-tools --rm --tty -i --restart='Never' --image mcr.microsoft.com/mssql-tools --command -- bash
+
+Then, run the following command:
+    sqlcmd -S {{ $relname }}-0.{{ $relname }}-headless.{{ $ns }}:{{ $svcPort }} -U sa -P <your_password>
+
+Additional info:
+    1. Use kubectl port-forward -n {{ $ns }} {{ $relname }}-0 {{ $svcPort }} [...other ports] to forward pod's port to your local machine
+    {{- if gt (int .Values.replicaCount) 1 }}
+    2. You must configure an availabilty group to mirror your data between {{ .Values.replicaCount }} SQL Server instances
+    {{- end }}
+    {{- if .Values.extraPorts}}
+    3. Additional ports are available on a headless service:
+    {{- range $val := .Values.extraPorts }}
+      - name: {{ $val.name | default "?" }}
+        port: {{ $val.port }}
+        targetPort: {{ default $val.targetPort $val.port }}
+    {{- end }}
+    {{- end }}
+
