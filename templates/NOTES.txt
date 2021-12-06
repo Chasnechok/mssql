@@ -20,7 +20,7 @@ To connect to your database, create a MSSQL Tools client container:
     kubectl run -n {{ $ns }} mssql-tools --rm --tty -i --restart='Never' --image mcr.microsoft.com/mssql-tools --command -- bash
 
 Then, run the following command:
-    sqlcmd -S {{ $relname }}-0.{{ $relname }}-headless.{{ $ns }}:{{ $svcPort }} -U sa -P <your_password>
+    sqlcmd -S {{ $relname }}-0.{{ $relname }}-headless.{{ $ns }}{{ if not (eq (int $svcPort) 1433) }},{{ $svcPort }}{{- end }} -U sa -P <your_password>
 
 Additional info:
     1. Use kubectl port-forward -n {{ $ns }} {{ $relname }}-0 {{ $svcPort }} [...other ports] to forward pod's port to your local machine
